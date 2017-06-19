@@ -26,8 +26,8 @@
     :workarounds "1048576"))
 
 (defmethod initialize-instance :after ((instance openedge-adapter) &key &allow-other-keys)
-  (let ((path (db-path instance)))
-    (unless (and (slot-boundp instance 'database-name) (db-name instance))
+  (unless (and (slot-boundp instance 'database-name) (db-name instance))
+    (let ((path (db-path instance)))
       (setf (db-name instance)
             (pathname-name (if (stringp path)
                                (parse-namestring path)
@@ -133,6 +133,27 @@
 
 (defmethod rollback ((adapter openedge-adapter))
   (plain-odbc:rollback (raw-connection adapter)))
+
+(defmethod table-exists-p ((adapter openedge-adapter) table &key schema)
+  (let ((schema (or schema (default-schema adapter))))
+    (if (plain-odbc:get-tables (raw-connection adapter) nil schema table "TABLE")
+        t
+        nil)))
+
+(defmethod index-exists-p ((adapter openedge-adapter) table index &key schema)
+  (let ((schema (or schema (default-schema adapter))))
+    (if (execute adapter (sxql:select ((:raw "1"))
+                           (sxql:from :pub._index)
+                           (sxql:inner-join (:as (sxql:select ((:as :rowid :file-rowid))
+                                                   (sxql:from :pub._file)
+                                                   (sxql:where (:and (:= :_file-name table)
+                                                                     (:= :_tbl-type "T")
+                                                                     (:= :_owner schema))))
+                                                 :tbl)
+                                            :on (:and (:= :_index-name index)
+                                                      (:= :_file-recid :tbl.file-rowid)))))
+        t
+        nil)))
 
 (defmethod get-table-area ((adapter openedge-adapter) table &key schema)
   ;; FIXME: allowing keywords here doesn't actually work.

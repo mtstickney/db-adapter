@@ -10,6 +10,8 @@
            #:start-transaction
            #:commit
            #:rollback
+           #:table-exists-p
+           #:index-exists-p
            #:get-table-area
            #:get-index-area
            #:move-table
@@ -28,6 +30,14 @@
 (defgeneric start-transaction (adapter))
 (defgeneric commit (adapter))
 (defgeneric rollback (adapter))
+(defgeneric table-exists-p (adapter table &key schema)
+  (:method ((adapter db-adapter) table &key (schema "PUB"))
+    (if (execute adapter (sxql:select ((:raw "1"))
+                           (sxql:from :information_schema.tables)
+                           (sxql:where (:and (:= :table_name table)
+                                             (:= :table_schema schema)))))
+        t
+        nil)))
 ;; Maybe-TODO: add some methods for (optional) savepoint support.
 (defgeneric get-table-area (adapter table &key schema))
 (defgeneric get-index-area (adapter table index &key table-schema index-schema))
