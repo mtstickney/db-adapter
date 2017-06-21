@@ -7,7 +7,7 @@
   :version "1.0"
   :author ""
   :license ""
-  :depends-on ()
+  :depends-on (#:sxql)
   :components ((:module "src"
                 :components
                 ((:file "db-adapter"))))
