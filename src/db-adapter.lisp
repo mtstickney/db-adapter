@@ -51,7 +51,7 @@
         nil)))
 ;; Maybe-TODO: add some methods for (optional) savepoint support.
 (defgeneric get-table-area (adapter table &key schema))
-(defgeneric get-index-area (adapter table index &key table-schema index-schema))
+(defgeneric get-index-area (adapter table index &key schema))
 (defgeneric area-exists-p (adapter area))
 (defgeneric move-table (adapter table new-area &key schema))
 (defgeneric move-index (adapter table index new-area &key schema))

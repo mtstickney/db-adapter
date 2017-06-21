@@ -190,24 +190,21 @@
       (error "There is no storage area for table ~A.~A" schema table))
     (first (first areas))))
 
-(defmethod get-index-area ((adapter openedge-adapter) table index &key table-schema index-schema)
+(defmethod get-index-area ((adapter openedge-adapter) table index &key schema)
   (check-type table (or keyword string))
   (check-type index (or keyword string))
-  (check-type table-schema (or keyword string null))
-  (check-type index-schema (or keyword string null))
-  (let* ((table-schema (or table-schema (default-schema adapter)))
-         (index-schema (or index-schema (default-schema adapter)))
+  (check-type schema (or keyword string null))
+  (let* ((schema (or schema (default-schema adapter)))
          (areas (execute adapter
                          (sxql:select :area._area-name
                            (sxql:from (:as (sxql:select ((:as :rowid :tbl-rowid) :_file-number)
                                              (sxql:from :_file)
                                              (sxql:where (:and (:= :_file-name table)
                                                                (:= :_tbl-type "T")
-                                                               (:= :_owner table-schema))))
+                                                               (:= :_owner schema))))
                                            :tbl))
                            (sxql:inner-join (:as :_index :idx)
                                             :on (:and (:= :_index-name index)
-                                                      (:= :_idxowner index-schema)
                                                       (:= :_file-recid :tbl.tbl-rowid)))
                            (sxql:inner-join (:as :_storageobject :so)
                                             :on (:and (:= :idx._idx-num :so._object-number)
@@ -215,10 +212,9 @@
                            (sxql:inner-join (:as :_area :area)
                                             :on (:= :so._area-number :area._area-number))))))
     (unless areas
-      (error "There is no storage area for index ~A.~A of table ~A.~A."
-             index-schema
+      (error "There is no storage area for index ~A of table ~A.~A."
              index
-             table-schema
+             schema
              table))
     (first (first areas))))
 
