@@ -140,6 +140,21 @@
         t
         nil)))
 
+(defmethod column-exists-p ((adapter openedge-adapter) table column &key schema)
+  (let ((schema (or schema (default-schema adapter))))
+    (if (execute adapter (sxql:select ((:raw "1"))
+                           (sxql:from :pub._field)
+                           (sxql:inner-join (:as (sxql:select (:rowid)
+                                                   (sxql:from :pub._file)
+                                                   (sxql:where (:and (:= :_file-name table)
+                                                                     (:= :_tbl-type "T")
+                                                                     (:= :_owner schema))))
+                                                 :tbl)
+                                            :on (:= :_file-recid :tbl.rowid))
+                           (sxql:where (:= :_field-name column))))
+        t
+        nil)))
+
 (defmethod index-exists-p ((adapter openedge-adapter) table index &key schema)
   (let ((schema (or schema (default-schema adapter))))
     (if (execute adapter (sxql:select ((:raw "1"))

@@ -11,6 +11,7 @@
            #:commit
            #:rollback
            #:table-exists-p
+           #:column-exists-p
            #:index-exists-p
            #:get-table-area
            #:get-index-area
@@ -36,6 +37,15 @@
                            (sxql:from :information_schema.tables)
                            (sxql:where (:and (:= :table_name table)
                                              (:= :table_schema schema)))))
+        t
+        nil)))
+(defgeneric column-exists-p (adapter table column &key schema)
+  (:method ((adapter db-adapter) table column &key (schema "PUB"))
+    (if (execute adapter (sxql:select ((:raw "1"))
+                           (sxql:from :information_schema.columns)
+                           (sxql:where (:and (:= :table_schema schema)
+                                             (:= :table_name table)
+                                             (:= :column_name column)))))
         t
         nil)))
 ;; Maybe-TODO: add some methods for (optional) savepoint support.
