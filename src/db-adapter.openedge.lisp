@@ -222,6 +222,14 @@
              table))
     (first (first areas))))
 
+(defmethod area-exists-p ((adapter openedge-adapter) area)
+  (check-type area string)
+  (if (execute adapter (sxql:select ((:raw "1"))
+                         (sxql:from :pub._area)
+                         (sxql:where (:= :_area-name area))))
+      t
+      nil))
+
 (defparameter *default-dlc-dir*
   #+windows #P"C:\\Progress\\OpenEdge\\"
   #-windows #P"/usr/dlc/")

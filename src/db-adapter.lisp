@@ -15,6 +15,7 @@
            #:index-exists-p
            #:get-table-area
            #:get-index-area
+           #:area-exists-p
            #:move-table
            #:move-index
            #:move-table-and-indexes))
@@ -51,6 +52,7 @@
 ;; Maybe-TODO: add some methods for (optional) savepoint support.
 (defgeneric get-table-area (adapter table &key schema))
 (defgeneric get-index-area (adapter table index &key table-schema index-schema))
+(defgeneric area-exists-p (adapter area))
 (defgeneric move-table (adapter table new-area &key schema))
 (defgeneric move-index (adapter table index new-area &key schema))
 (defgeneric move-table-and-indexes (adapter table new-area &key schema index-area))
