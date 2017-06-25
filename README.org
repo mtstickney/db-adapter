@@ -1,5 +1,45 @@
-* Db-Adapter.Openedge 
+* DB-Adapter
 
-** Usage
+  DB-Adapter is a library to provide an abstract interface to database
+  functionality (much like ODBC). The interface is still under
+  development, and should be considered alpha -- incompatible changes
+  will be made without notice.
 
-** Installation
+  The interface covers basic db operations like connecting and
+  disconnecting, committing or rolling back transactions, executing
+  SQL statements, and data-management operations that are likely to be
+  non-standard across databases. It does not attempt to normalize or
+  generate SQL statements -- clients will have to make their own
+  arrangements for portable queries.
+
+** Related Work
+*** ODBC
+    ODBC also aims to provide an abstract interface to multiple
+    databases, and it does quite well at providing baseline
+    functionality. However, ODBC is foreign code which requires
+    wrappers, and the nature of its ABI make it difficult to add
+    support for db features that don't fit within the ODBC model. This
+    library aims to make it at least possible to use additional
+    features, as long as clients are willing to manage the portability
+    issues.
+
+*** cl-dbi
+    `cl-dbi` is explicitly a database-compatibility library, and has
+    gained some popularity. There are issues with it that this library
+    tries to avoid:
+    - interns keywords at runtime (from column names, so you can get
+      wacky keywords like `:|sum(avg(item_price))|`)
+    - uses plists for result sets, so it conses twice as much as it
+      needs to per row
+    - supports cursor-style queries, but the API doesn't support
+      foreign drivers like ODBC (it lacks cleanup support)
+    - the driver API is under-specified, which makes it difficult to
+      write new drivers (methods are sometimes specced to return
+      "something", with no indication where that value will be used)
+    - the API is more focused than this library, and doesn't include
+      some useful data-management facilities.
+
+*** clsql
+    `clsql` uses a system of adapters to address database portability
+    issues. Unlike `clsql`, this library does not intend to include
+    sql-generating DSLs or an ORM.
