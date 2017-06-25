@@ -24,11 +24,11 @@
     issues.
 
 *** cl-dbi
-    `cl-dbi` is explicitly a database-compatibility library, and has
+    =cl-dbi= is explicitly a database-compatibility library, and has
     gained some popularity. There are issues with it that this library
     tries to avoid:
     - interns keywords at runtime (from column names, so you can get
-      wacky keywords like `:|sum(avg(item_price))|`)
+      wacky keywords like =:|sum(avg(item_price))|=)
     - uses plists for result sets, so it conses twice as much as it
       needs to per row
     - supports cursor-style queries, but the API doesn't support
@@ -40,6 +40,6 @@
       some useful data-management facilities.
 
 *** clsql
-    `clsql` uses a system of adapters to address database portability
-    issues. Unlike `clsql`, this library does not intend to include
+    =clsql= uses a system of adapters to address database portability
+    issues. Unlike =clsql=, this library does not intend to include
     sql-generating DSLs or an ORM.
